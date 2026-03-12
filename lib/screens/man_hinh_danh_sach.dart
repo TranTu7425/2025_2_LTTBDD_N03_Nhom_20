@@ -147,11 +147,26 @@ class _XayDungTheGhiChu extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  ghiChu.tieuDe,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        ghiChu.tieuDe,
+                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => quanLy.doiTrangThaiGhim(ghiChu.id),
+                      child: Icon(
+                        ghiChu.daGhim ? Icons.push_pin : Icons.push_pin_outlined,
+                        size: 18,
+                        color: ghiChu.daGhim ? quanLy.mauChuDao : Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Expanded(
