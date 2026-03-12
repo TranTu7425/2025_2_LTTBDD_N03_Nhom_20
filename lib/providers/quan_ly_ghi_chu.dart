@@ -8,7 +8,16 @@ class QuanLyGhiChu with ChangeNotifier {
   Color _mauChuDao = Colors.blue;
   bool _hienLuoi = true;
 
-  List<GhiChu> get danhSachGhiChu => _danhSachGhiChu.where((gc) => !gc.daXoa).toList();
+  List<GhiChu> get danhSachGhiChu {
+    final danhSach = _danhSachGhiChu.where((gc) => !gc.daXoa).toList();
+    danhSach.sort((a, b) {
+      if (a.daGhim && !b.daGhim) return -1;
+      if (!a.daGhim && b.daGhim) return 1;
+      return b.ngayTao.compareTo(a.ngayTao);
+    });
+    return danhSach;
+  }
+
   bool get laTiengViet => _laTiengViet;
   bool get laCheDoToi => _laCheDoToi;
   Color get mauChuDao => _mauChuDao;
@@ -21,8 +30,16 @@ class QuanLyGhiChu with ChangeNotifier {
       noiDung: noiDung,
       ngayTao: DateTime.now(),
     );
-    _danhSachGhiChu.insert(0, ghiChuMoi);
+    _danhSachGhiChu.add(ghiChuMoi);
     notifyListeners();
+  }
+
+  void doiTrangThaiGhim(String id) {
+    final chiSo = _danhSachGhiChu.indexWhere((gc) => gc.id == id);
+    if (chiSo >= 0) {
+      _danhSachGhiChu[chiSo].daGhim = !_danhSachGhiChu[chiSo].daGhim;
+      notifyListeners();
+    }
   }
 
   void suaGhiChu(String id, String tieuDeMoi, String noiDungMoi) {
