@@ -14,12 +14,14 @@ class ManHinhSoanThao extends StatefulWidget {
 class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
   late TextEditingController _boDieuKhienTieuDe;
   late TextEditingController _boDieuKhienNoiDung;
+  String? _nhanDuocChon;
 
   @override
   void initState() {
     super.initState();
     _boDieuKhienTieuDe = TextEditingController(text: widget.ghiChu?.tieuDe ?? '');
     _boDieuKhienNoiDung = TextEditingController(text: widget.ghiChu?.noiDung ?? '');
+    _nhanDuocChon = widget.ghiChu?.nhan;
   }
 
   @override
@@ -40,9 +42,9 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
     }
 
     if (widget.ghiChu == null) {
-      quanLy.themGhiChu(tieuDe, noiDung);
+      quanLy.themGhiChu(tieuDe, noiDung, nhan: _nhanDuocChon);
     } else {
-      quanLy.suaGhiChu(widget.ghiChu!.id, tieuDe, noiDung);
+      quanLy.suaGhiChu(widget.ghiChu!.id, tieuDe, noiDung, nhanMoi: _nhanDuocChon);
     }
     Navigator.pop(context);
   }
@@ -51,6 +53,7 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
   Widget build(BuildContext context) {
     final quanLy = Provider.of<QuanLyGhiChu>(context);
     final laTiengViet = quanLy.laTiengViet;
+    final danhSachNhan = quanLy.danhSachNhan;
 
     return Scaffold(
       appBar: AppBar(
@@ -69,6 +72,7 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _boDieuKhienTieuDe,
@@ -76,6 +80,43 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
               decoration: InputDecoration(
                 hintText: laTiengViet ? 'Tiêu đề' : 'Title',
                 border: InputBorder.none,
+              ),
+            ),
+            const SizedBox(height: 10),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ChoiceChip(
+                    label: Text(laTiengViet ? 'Không nhãn' : 'No Tag'),
+                    selected: _nhanDuocChon == null,
+                    onSelected: (selected) {
+                      setState(() {
+                        _nhanDuocChon = null;
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  ...danhSachNhan.entries.map((entry) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: ChoiceChip(
+                        label: Text(entry.key),
+                        selected: _nhanDuocChon == entry.key,
+                        selectedColor: entry.value.withOpacity(0.3),
+                        labelStyle: TextStyle(
+                          color: _nhanDuocChon == entry.key ? entry.value : null,
+                          fontWeight: _nhanDuocChon == entry.key ? FontWeight.bold : null,
+                        ),
+                        onSelected: (selected) {
+                          setState(() {
+                            _nhanDuocChon = selected ? entry.key : null;
+                          });
+                        },
+                      ),
+                    );
+                  }).toList(),
+                ],
               ),
             ),
             const Divider(),
