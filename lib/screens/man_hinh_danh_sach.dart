@@ -21,6 +21,7 @@ class _ManHinhDanhSachState extends State<ManHinhDanhSach> {
     final quanLy = Provider.of<QuanLyGhiChu>(context);
     final laTiengViet = quanLy.laTiengViet;
     final danhSachHienThi = quanLy.timKiem(_tuKhoaTimKiem);
+    final danhSachNhan = quanLy.danhSachNhan;
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +54,7 @@ class _ManHinhDanhSachState extends State<ManHinhDanhSach> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             child: TextField(
               onChanged: (giaTri) {
                 setState(() {
@@ -69,6 +70,39 @@ class _ManHinhDanhSachState extends State<ManHinhDanhSach> {
                 filled: true,
                 fillColor: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
               ),
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 4.0),
+            child: Row(
+              children: [
+                FilterChip(
+                  label: Text(laTiengViet ? 'Tất cả' : 'All'),
+                  selected: quanLy.nhanDangLoc == null,
+                  onSelected: (selected) {
+                    quanLy.locTheoNhan(null);
+                  },
+                ),
+                const SizedBox(width: 8),
+                ...danhSachNhan.entries.map((entry) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: FilterChip(
+                      label: Text(entry.key),
+                      selected: quanLy.nhanDangLoc == entry.key,
+                      onSelected: (selected) {
+                        quanLy.locTheoNhan(selected ? entry.key : null);
+                      },
+                      selectedColor: entry.value.withOpacity(0.3),
+                      labelStyle: TextStyle(
+                        color: quanLy.nhanDangLoc == entry.key ? entry.value : null,
+                        fontWeight: quanLy.nhanDangLoc == entry.key ? FontWeight.bold : null,
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ],
             ),
           ),
           Expanded(
@@ -118,6 +152,7 @@ class _XayDungTheGhiChu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final quanLy = Provider.of<QuanLyGhiChu>(context, listen: false);
+    final mauNhan = ghiChu.nhan != null ? quanLy.danhSachNhan[ghiChu.nhan] : null;
 
     return Dismissible(
       key: Key(ghiChu.id),
@@ -141,7 +176,12 @@ class _XayDungTheGhiChu extends StatelessWidget {
         },
         child: Card(
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+            side: mauNhan != null 
+              ? BorderSide(color: mauNhan.withOpacity(0.5), width: 2) 
+              : BorderSide.none,
+          ),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
@@ -168,12 +208,30 @@ class _XayDungTheGhiChu extends StatelessWidget {
                     ),
                   ],
                 ),
+                if (ghiChu.nhan != null) ...[
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: mauNhan?.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Text(
+                      ghiChu.nhan!,
+                      style: TextStyle(
+                        fontSize: 10, 
+                        color: mauNhan,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 8),
                 Expanded(
                   child: Text(
                     ghiChu.noiDung,
                     style: const TextStyle(fontSize: 14),
-                    maxLines: 4,
+                    maxLines: ghiChu.nhan != null ? 3 : 4,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
