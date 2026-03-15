@@ -7,9 +7,29 @@ class QuanLyGhiChu with ChangeNotifier {
   bool _laCheDoToi = false;
   Color _mauChuDao = Colors.blue;
   bool _hienLuoi = true;
+  String? _nhanDangLoc;
+
+  final Map<String, Color> _danhSachNhan = {
+    'Công việc': Colors.red,
+    'Học tập': Colors.green,
+    'Cá nhân': Colors.blue,
+    'Quan trọng': Colors.orange,
+  };
+
+  final Map<String, Color> _danhSachNhanTiengAnh = {
+    'Work': Colors.red,
+    'Study': Colors.green,
+    'Personal': Colors.blue,
+    'Important': Colors.orange,
+  };
 
   List<GhiChu> get danhSachGhiChu {
-    final danhSach = _danhSachGhiChu.where((gc) => !gc.daXoa).toList();
+    var danhSach = _danhSachGhiChu.where((gc) => !gc.daXoa).toList();
+    
+    if (_nhanDangLoc != null) {
+      danhSach = danhSach.where((gc) => gc.nhan == _nhanDangLoc).toList();
+    }
+
     danhSach.sort((a, b) {
       if (a.daGhim && !b.daGhim) return -1;
       if (!a.daGhim && b.daGhim) return 1;
@@ -22,13 +42,16 @@ class QuanLyGhiChu with ChangeNotifier {
   bool get laCheDoToi => _laCheDoToi;
   Color get mauChuDao => _mauChuDao;
   bool get hienLuoi => _hienLuoi;
+  String? get nhanDangLoc => _nhanDangLoc;
+  Map<String, Color> get danhSachNhan => _laTiengViet ? _danhSachNhan : _danhSachNhanTiengAnh;
 
-  void themGhiChu(String tieuDe, String noiDung) {
+  void themGhiChu(String tieuDe, String noiDung, {String? nhan}) {
     final ghiChuMoi = GhiChu(
       id: DateTime.now().toString(),
       tieuDe: tieuDe,
       noiDung: noiDung,
       ngayTao: DateTime.now(),
+      nhan: nhan,
     );
     _danhSachGhiChu.add(ghiChuMoi);
     notifyListeners();
@@ -42,11 +65,12 @@ class QuanLyGhiChu with ChangeNotifier {
     }
   }
 
-  void suaGhiChu(String id, String tieuDeMoi, String noiDungMoi) {
+  void suaGhiChu(String id, String tieuDeMoi, String noiDungMoi, {String? nhanMoi}) {
     final chiSo = _danhSachGhiChu.indexWhere((gc) => gc.id == id);
     if (chiSo >= 0) {
       _danhSachGhiChu[chiSo].tieuDe = tieuDeMoi;
       _danhSachGhiChu[chiSo].noiDung = noiDungMoi;
+      _danhSachGhiChu[chiSo].nhan = nhanMoi;
       notifyListeners();
     }
   }
@@ -76,9 +100,15 @@ class QuanLyGhiChu with ChangeNotifier {
     notifyListeners();
   }
 
+  void locTheoNhan(String? nhan) {
+    _nhanDangLoc = nhan;
+    notifyListeners();
+  }
+
   List<GhiChu> timKiem(String tuKhoa) {
-    if (tuKhoa.isEmpty) return danhSachGhiChu;
-    return danhSachGhiChu.where((gc) {
+    var danhSach = danhSachGhiChu;
+    if (tuKhoa.isEmpty) return danhSach;
+    return danhSach.where((gc) {
       return gc.tieuDe.toLowerCase().contains(tuKhoa.toLowerCase()) ||
              gc.noiDung.toLowerCase().contains(tuKhoa.toLowerCase());
     }).toList();
