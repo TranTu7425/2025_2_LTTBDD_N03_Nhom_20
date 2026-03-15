@@ -5,6 +5,7 @@ class GhiChu {
   DateTime ngayTao;
   bool daXoa;
   bool daGhim;
+  String? nhan;
 
   GhiChu({
     required this.id,
@@ -13,5 +14,6 @@ class GhiChu {
     required this.ngayTao,
     this.daXoa = false,
     this.daGhim = false,
+    this.nhan,
   });
 }
