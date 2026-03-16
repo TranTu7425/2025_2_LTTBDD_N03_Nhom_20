@@ -71,6 +71,18 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
     Navigator.pop(context);
   }
 
+  Widget _XayDungLoiAnh() {
+    return Container(
+      height: 200,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Icon(Icons.broken_image_rounded, color: Colors.grey, size: 40),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final quanLy = Provider.of<QuanLyGhiChu>(context);
@@ -82,147 +94,178 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
         title: Text(
           widget.ghiChu == null 
             ? (laTiengViet ? 'Thêm ghi chú' : 'Add Note') 
-            : (laTiengViet ? 'Sửa ghi chú' : 'Edit Note')
+            : (laTiengViet ? 'Sửa ghi chú' : 'Edit Note'),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
+          IconButton(
+            icon: Icon(
+              widget.ghiChu?.daGhim ?? false ? Icons.push_pin : Icons.push_pin_outlined,
+              color: widget.ghiChu?.daGhim ?? false ? quanLy.mauChuDao : null,
+            ),
+            onPressed: () {
+              if (widget.ghiChu != null) {
+                quanLy.doiTrangThaiGhim(widget.ghiChu!.id);
+                setState(() {});
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.image_outlined),
             onPressed: _chonAnh,
           ),
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: _luuGhiChu,
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: _boDieuKhienTieuDe,
+                    style: const TextStyle(
+                      fontSize: 26, 
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -0.5,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: laTiengViet ? 'Tiêu đề' : 'Title',
+                      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        ChoiceChip(
+                          label: Text(laTiengViet ? 'Không nhãn' : 'No Tag'),
+                          selected: _nhanDuocChon == null,
+                          onSelected: (selected) {
+                            setState(() {
+                              _nhanDuocChon = null;
+                            });
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        ...danhSachNhan.entries.map((entry) {
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: ChoiceChip(
+                              label: Text(entry.key),
+                              selected: _nhanDuocChon == entry.key,
+                              selectedColor: entry.value.withOpacity(0.2),
+                              checkmarkColor: entry.value,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              labelStyle: TextStyle(
+                                color: _nhanDuocChon == entry.key ? entry.value : null,
+                                fontWeight: _nhanDuocChon == entry.key ? FontWeight.bold : null,
+                              ),
+                              onSelected: (selected) {
+                                setState(() {
+                                  _nhanDuocChon = selected ? entry.key : null;
+                                });
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Divider(height: 1, thickness: 0.5),
+                  const SizedBox(height: 16),
+                  if (_duongDanAnh != null && _duongDanAnh!.isNotEmpty) ...[
+                    Stack(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: kIsWeb
+                                ? Image.network(
+                                    _duongDanAnh!,
+                                    width: double.infinity,
+                                    fit: BoxFit.fitWidth,
+                                    errorBuilder: (context, error, stackTrace) => _XayDungLoiAnh(),
+                                  )
+                                : Image.file(
+                                    File(_duongDanAnh!),
+                                    width: double.infinity,
+                                    fit: BoxFit.fitWidth,
+                                    errorBuilder: (context, error, stackTrace) => _XayDungLoiAnh(),
+                                  ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 10,
+                          right: 10,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _duongDanAnh = null;
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.6),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.close_rounded, color: Colors.white, size: 20),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                  TextField(
+                    controller: _boDieuKhienNoiDung,
+                    maxLines: null,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      height: 1.5,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: laTiengViet ? 'Nội dung ghi chú...' : 'Note content...',
+                      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: _boDieuKhienTieuDe,
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                decoration: InputDecoration(
-                  hintText: laTiengViet ? 'Tiêu đề' : 'Title',
-                  border: InputBorder.none,
-                ),
-              ),
-              const SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    ChoiceChip(
-                      label: Text(laTiengViet ? 'Không nhãn' : 'No Tag'),
-                      selected: _nhanDuocChon == null,
-                      onSelected: (selected) {
-                        setState(() {
-                          _nhanDuocChon = null;
-                        });
-                      },
-                    ),
-                    const SizedBox(width: 8),
-                    ...danhSachNhan.entries.map((entry) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: ChoiceChip(
-                          label: Text(entry.key),
-                          selected: _nhanDuocChon == entry.key,
-                          selectedColor: entry.value.withOpacity(0.3),
-                          labelStyle: TextStyle(
-                            color: _nhanDuocChon == entry.key ? entry.value : null,
-                            fontWeight: _nhanDuocChon == entry.key ? FontWeight.bold : null,
-                          ),
-                          onSelected: (selected) {
-                            setState(() {
-                              _nhanDuocChon = selected ? entry.key : null;
-                            });
-                          },
-                        ),
-                      );
-                    }).toList(),
-                  ],
-                ),
-              ),
-              const Divider(),
-              if (_duongDanAnh != null && _duongDanAnh!.isNotEmpty) ...[
-                Stack(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: kIsWeb
-                          ? Image.network(
-                              _duongDanAnh!,
-                              width: double.infinity,
-                              height: 200,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  height: 200,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Icon(Icons.broken_image, color: Colors.grey),
-                                );
-                              },
-                            )
-                          : Image.file(
-                              File(_duongDanAnh!),
-                              width: double.infinity,
-                              height: 200,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  height: 200,
-                                  width: double.infinity,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  child: const Icon(Icons.broken_image, color: Colors.grey),
-                                );
-                              },
-                            ),
-                    ),
-                    Positioned(
-                      top: 5,
-                      right: 5,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _duongDanAnh = null;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Colors.black54,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.close, color: Colors.white, size: 20),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-              ],
-              TextField(
-                controller: _boDieuKhienNoiDung,
-                maxLines: null,
-                style: const TextStyle(fontSize: 18),
-                decoration: InputDecoration(
-                  hintText: laTiengViet ? 'Nội dung ghi chú...' : 'Note content...',
-                  border: InputBorder.none,
-                ),
-              ),
-            ],
-          ),
-        ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _luuGhiChu,
+        label: Text(laTiengViet ? 'Lưu' : 'Save'),
+        icon: const Icon(Icons.done_rounded),
+        extendedPadding: const EdgeInsets.symmetric(horizontal: 24),
       ),
     );
   }
