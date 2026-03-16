@@ -39,10 +39,15 @@ class UngDungGhiChu extends StatelessWidget {
           ),
           color: quanLy.laCheDoToi ? const Color(0xFF1E1E1E) : Colors.white,
         ),
-        appBarTheme: const AppBarTheme(
-          centerTitle: true,
+        appBarTheme: AppBarTheme(
+          centerTitle: false,
           elevation: 0,
           scrolledUnderElevation: 0,
+          titleTextStyle: TextStyle(
+            color: quanLy.laCheDoToi ? Colors.white : Colors.black87,
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+          ),
         ),
         floatingActionButtonTheme: FloatingActionButtonThemeData(
           shape: RoundedRectangleBorder(
