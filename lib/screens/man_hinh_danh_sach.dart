@@ -6,7 +6,6 @@ import '../providers/quan_ly_ghi_chu.dart';
 import '../models/ghi_chu.dart';
 import 'man_hinh_soan_thao.dart';
 import 'man_hinh_cai_dat.dart';
-import 'man_hinh_thong_tin_nhom.dart';
 
 class ManHinhDanhSach extends StatefulWidget {
   const ManHinhDanhSach({super.key});
@@ -314,11 +313,6 @@ class _ManHinhDanhSachState extends State<ManHinhDanhSach> {
           if (chiSo == 1) {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const ManHinhThongTinNhom()),
-            ).then((_) => setState(() => _chiSoHienTai = 0));
-          } else if (chiSo == 2) {
-            Navigator.push(
-              context,
               MaterialPageRoute(builder: (_) => const ManHinhCaiDat()),
             ).then((_) => setState(() => _chiSoHienTai = 0));
           }
@@ -328,11 +322,6 @@ class _ManHinhDanhSachState extends State<ManHinhDanhSach> {
             icon: const Icon(Icons.edit_note_outlined),
             selectedIcon: const Icon(Icons.edit_note_rounded),
             label: laTiengViet ? 'Ghi chú' : 'Notes',
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.people_outline_rounded),
-            selectedIcon: const Icon(Icons.people_rounded),
-            label: laTiengViet ? 'Nhóm' : 'Team',
           ),
           NavigationDestination(
             icon: const Icon(Icons.settings_suggest_outlined),
