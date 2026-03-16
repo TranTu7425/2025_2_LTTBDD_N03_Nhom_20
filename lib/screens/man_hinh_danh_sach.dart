@@ -199,8 +199,21 @@ class _XayDungTheGhiChu extends StatelessWidget {
 
     return Dismissible(
       key: Key(ghiChu.id),
-      direction: DismissDirection.endToStart,
+      direction: DismissDirection.horizontal,
       background: Container(
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.only(left: 24),
+        decoration: BoxDecoration(
+          color: Colors.amber.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Icon(
+          ghiChu.daGhim ? Icons.push_pin_rounded : Icons.push_pin_outlined,
+          color: Colors.white,
+          size: 28,
+        ),
+      ),
+      secondaryBackground: Container(
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 24),
         decoration: BoxDecoration(
@@ -213,8 +226,17 @@ class _XayDungTheGhiChu extends StatelessWidget {
           size: 28,
         ),
       ),
+      confirmDismiss: (huong) async {
+        if (huong == DismissDirection.startToEnd) {
+          quanLy.doiTrangThaiGhim(ghiChu.id);
+          return false;
+        }
+        return true;
+      },
       onDismissed: (huong) {
-        quanLy.xoaGhiChu(ghiChu.id);
+        if (huong == DismissDirection.endToStart) {
+          quanLy.xoaGhiChu(ghiChu.id);
+        }
       },
       child: GestureDetector(
         onTap: () {
@@ -296,12 +318,17 @@ class _XayDungTheGhiChu extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          if (ghiChu.daGhim)
-                            Icon(
-                              Icons.push_pin_rounded,
-                              size: 18,
-                              color: quanLy.mauChuDao,
+                          IconButton(
+                            onPressed: () => quanLy.doiTrangThaiGhim(ghiChu.id),
+                            icon: Icon(
+                              ghiChu.daGhim ? Icons.push_pin_rounded : Icons.push_pin_outlined,
+                              size: 20,
+                              color: ghiChu.daGhim ? quanLy.mauChuDao : Colors.grey.withOpacity(0.5),
                             ),
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 8),
