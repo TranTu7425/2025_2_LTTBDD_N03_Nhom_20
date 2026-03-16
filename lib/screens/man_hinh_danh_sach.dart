@@ -329,7 +329,30 @@ class _XayDungTheGhiChu extends StatelessWidget {
       },
       onDismissed: (huong) {
         if (huong == DismissDirection.endToStart) {
+          final ghiChuTam = ghiChu;
           quanLy.xoaGhiChu(ghiChu.id);
+
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                quanLy.laTiengViet
+                    ? 'Đã xóa "${ghiChuTam.tieuDe.isEmpty ? 'Ghi chú' : ghiChuTam.tieuDe}"'
+                    : 'Deleted "${ghiChuTam.tieuDe.isEmpty ? 'Note' : ghiChuTam.tieuDe}"',
+              ),
+              action: SnackBarAction(
+                label: quanLy.laTiengViet ? 'Hoàn tác' : 'Undo',
+                onPressed: () {
+                  quanLy.khoiPhucGhiChu(ghiChuTam);
+                },
+              ),
+              duration: const Duration(seconds: 4),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          );
         }
       },
       child: GestureDetector(
