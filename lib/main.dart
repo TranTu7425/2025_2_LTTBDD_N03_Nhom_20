@@ -18,7 +18,7 @@ class UngDungGhiChu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final quanLy = Provider.of<QuanLyGhiChu>(context);
-    
+
     return MaterialApp(
       title: 'TakeNote',
       debugShowCheckedModeBanner: false,
@@ -27,6 +27,22 @@ class UngDungGhiChu extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
           seedColor: quanLy.mauChuDao,
           brightness: quanLy.laCheDoToi ? Brightness.dark : Brightness.light,
+        ),
+        cardTheme: CardThemeData(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          centerTitle: true,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+        ),
+        floatingActionButtonTheme: FloatingActionButtonThemeData(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
         ),
       ),
       home: const ManHinhChao(),
