@@ -82,6 +82,11 @@ class QuanLyGhiChu with ChangeNotifier {
     notifyListeners();
   }
 
+  void xoaNhieuGhiChu(List<String> danhSachId) {
+    _danhSachGhiChu.removeWhere((gc) => danhSachId.contains(gc.id));
+    notifyListeners();
+  }
+
   void doiNgonNgu() {
     _laTiengViet = !_laTiengViet;
     notifyListeners();
