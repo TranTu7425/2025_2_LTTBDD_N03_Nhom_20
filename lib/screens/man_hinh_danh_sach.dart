@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import '../providers/quan_ly_ghi_chu.dart';
 import '../models/ghi_chu.dart';
@@ -182,57 +184,93 @@ class _XayDungTheGhiChu extends StatelessWidget {
               ? BorderSide(color: mauNhan.withOpacity(0.5), width: 2) 
               : BorderSide.none,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(15),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        ghiChu.tieuDe,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                        maxLines: 1,
+                if (ghiChu.duongDanAnh != null && ghiChu.duongDanAnh!.isNotEmpty)
+                  kIsWeb
+                      ? Image.network(
+                          ghiChu.duongDanAnh!,
+                          width: double.infinity,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 100,
+                              width: double.infinity,
+                              color: Colors.grey[200],
+                              child: const Icon(Icons.broken_image, color: Colors.grey, size: 30),
+                            );
+                          },
+                        )
+                      : Image.file(
+                          File(ghiChu.duongDanAnh!),
+                          width: double.infinity,
+                          height: 100,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              height: 100,
+                              width: double.infinity,
+                              color: Colors.grey[200],
+                              child: const Icon(Icons.broken_image, color: Colors.grey, size: 30),
+                            );
+                          },
+                        ),
+                Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              ghiChu.tieuDe,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => quanLy.doiTrangThaiGhim(ghiChu.id),
+                            child: Icon(
+                              ghiChu.daGhim ? Icons.push_pin : Icons.push_pin_outlined,
+                              size: 18,
+                              color: ghiChu.daGhim ? quanLy.mauChuDao : Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (ghiChu.nhan != null) ...[
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: mauNhan?.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            ghiChu.nhan!,
+                            style: TextStyle(
+                              fontSize: 10, 
+                              color: mauNhan,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 8),
+                      Text(
+                        ghiChu.noiDung,
+                        style: const TextStyle(fontSize: 14),
+                        maxLines: ghiChu.duongDanAnh != null ? 2 : 4,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () => quanLy.doiTrangThaiGhim(ghiChu.id),
-                      child: Icon(
-                        ghiChu.daGhim ? Icons.push_pin : Icons.push_pin_outlined,
-                        size: 18,
-                        color: ghiChu.daGhim ? quanLy.mauChuDao : Colors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-                if (ghiChu.nhan != null) ...[
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: mauNhan?.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      ghiChu.nhan!,
-                      style: TextStyle(
-                        fontSize: 10, 
-                        color: mauNhan,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 8),
-                Expanded(
-                  child: Text(
-                    ghiChu.noiDung,
-                    style: const TextStyle(fontSize: 14),
-                    maxLines: ghiChu.nhan != null ? 3 : 4,
-                    overflow: TextOverflow.ellipsis,
+                    ],
                   ),
                 ),
               ],
