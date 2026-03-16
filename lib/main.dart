@@ -31,8 +31,13 @@ class UngDungGhiChu extends StatelessWidget {
         cardTheme: CardThemeData(
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(24),
+            side: BorderSide(
+              color: quanLy.laCheDoToi ? Colors.white10 : Colors.black.withOpacity(0.05),
+              width: 1,
+            ),
           ),
+          color: quanLy.laCheDoToi ? const Color(0xFF1E1E1E) : Colors.white,
         ),
         appBarTheme: const AppBarTheme(
           centerTitle: true,
