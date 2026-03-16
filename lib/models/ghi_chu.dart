@@ -6,6 +6,7 @@ class GhiChu {
   bool daXoa;
   bool daGhim;
   String? nhan;
+  String? duongDanAnh;
 
   GhiChu({
     required this.id,
@@ -15,5 +16,6 @@ class GhiChu {
     this.daXoa = false,
     this.daGhim = false,
     this.nhan,
+    this.duongDanAnh,
   });
 }
