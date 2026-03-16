@@ -45,13 +45,14 @@ class QuanLyGhiChu with ChangeNotifier {
   String? get nhanDangLoc => _nhanDangLoc;
   Map<String, Color> get danhSachNhan => _laTiengViet ? _danhSachNhan : _danhSachNhanTiengAnh;
 
-  void themGhiChu(String tieuDe, String noiDung, {String? nhan}) {
+  void themGhiChu(String tieuDe, String noiDung, {String? nhan, String? duongDanAnh}) {
     final ghiChuMoi = GhiChu(
       id: DateTime.now().toString(),
       tieuDe: tieuDe,
       noiDung: noiDung,
       ngayTao: DateTime.now(),
       nhan: nhan,
+      duongDanAnh: duongDanAnh,
     );
     _danhSachGhiChu.add(ghiChuMoi);
     notifyListeners();
@@ -65,12 +66,13 @@ class QuanLyGhiChu with ChangeNotifier {
     }
   }
 
-  void suaGhiChu(String id, String tieuDeMoi, String noiDungMoi, {String? nhanMoi}) {
+  void suaGhiChu(String id, String tieuDeMoi, String noiDungMoi, {String? nhanMoi, String? duongDanAnhMoi}) {
     final chiSo = _danhSachGhiChu.indexWhere((gc) => gc.id == id);
     if (chiSo >= 0) {
       _danhSachGhiChu[chiSo].tieuDe = tieuDeMoi;
       _danhSachGhiChu[chiSo].noiDung = noiDungMoi;
       _danhSachGhiChu[chiSo].nhan = nhanMoi;
+      _danhSachGhiChu[chiSo].duongDanAnh = duongDanAnhMoi;
       notifyListeners();
     }
   }
