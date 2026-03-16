@@ -145,20 +145,21 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
                 children: [
                   TextField(
                     controller: _boDieuKhienTieuDe,
-                    style: const TextStyle(
-                      fontSize: 26,
+                    style: TextStyle(
+                      fontSize: 28,
                       fontWeight: FontWeight.bold,
                       letterSpacing: -0.5,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     decoration: InputDecoration(
                       hintText: laTiengViet ? 'Tiêu đề' : 'Title',
-                      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
+                      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.4)),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -172,20 +173,22 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
                             });
                           },
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(14),
                           ),
+                          backgroundColor: Theme.of(context).colorScheme.surface,
+                          selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.15),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 10),
                         ...danhSachNhan.entries.map((entry) {
                           return Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
+                            padding: const EdgeInsets.only(right: 10.0),
                             child: ChoiceChip(
                               label: Text(entry.key),
                               selected: _nhanDuocChon == entry.key,
                               selectedColor: entry.value.withOpacity(0.2),
                               checkmarkColor: entry.value,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                               labelStyle: TextStyle(
                                 color: _nhanDuocChon == entry.key
@@ -206,25 +209,33 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  const Divider(height: 1, thickness: 0.5),
                   const SizedBox(height: 16),
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 20),
                   if (_duongDanAnh != null && _duongDanAnh!.isNotEmpty) ...[
                     Stack(
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(24),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.outlineVariant.withOpacity(0.5),
+                              width: 1,
+                            ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 8,
-                                offset: const Offset(0, 4),
+                                color: Colors.black.withOpacity(0.15),
+                                blurRadius: 15,
+                                offset: const Offset(0, 6),
                               ),
                             ],
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(24),
                             child: kIsWeb
                                 ? Image.network(
                                     _duongDanAnh!,
@@ -245,8 +256,8 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
                           ),
                         ),
                         Positioned(
-                          top: 10,
-                          right: 10,
+                          top: 12,
+                          right: 12,
                           child: GestureDetector(
                             onTap: () {
                               setState(() {
@@ -254,32 +265,37 @@ class _ManHinhSoanThaoState extends State<ManHinhSoanThao> {
                               });
                             },
                             child: Container(
-                              padding: const EdgeInsets.all(6),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.6),
+                                color: Colors.black.withOpacity(0.7),
                                 shape: BoxShape.circle,
+                                border: Border.all(color: Colors.white24, width: 1),
                               ),
                               child: const Icon(
                                 Icons.close_rounded,
                                 color: Colors.white,
-                                size: 20,
+                                size: 22,
                               ),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 24),
                   ],
                   TextField(
                     controller: _boDieuKhienNoiDung,
                     maxLines: null,
-                    style: const TextStyle(fontSize: 18, height: 1.5),
+                    style: TextStyle(
+                      fontSize: 19,
+                      height: 1.6,
+                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.9),
+                    ),
                     decoration: InputDecoration(
                       hintText: laTiengViet
                           ? 'Nội dung ghi chú...'
                           : 'Note content...',
-                      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
+                      hintStyle: TextStyle(color: Colors.grey.withOpacity(0.4)),
                       border: InputBorder.none,
                       contentPadding: EdgeInsets.zero,
                     ),

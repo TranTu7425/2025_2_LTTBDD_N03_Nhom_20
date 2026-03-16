@@ -15,8 +15,10 @@ class ManHinhCaiDat extends StatelessWidget {
         title: Text(laTiengViet ? 'Cài đặt' : 'Settings'),
       ),
       body: ListView(
+        padding: const EdgeInsets.all(16),
         children: [
           ListTile(
+            leading: const Icon(Icons.language_rounded),
             title: Text(laTiengViet ? 'Ngôn ngữ' : 'Language'),
             subtitle: Text(laTiengViet ? 'Tiếng Việt' : 'English'),
             trailing: Switch(
@@ -26,6 +28,7 @@ class ManHinhCaiDat extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
+            leading: const Icon(Icons.dark_mode_rounded),
             title: Text(laTiengViet ? 'Chế độ tối' : 'Dark Mode'),
             trailing: Switch(
               value: quanLy.laCheDoToi,
@@ -33,52 +36,51 @@ class ManHinhCaiDat extends StatelessWidget {
             ),
           ),
           const Divider(),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              laTiengViet ? 'Màu chủ đạo' : 'Primary Color',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ListTile(
+            leading: const Icon(Icons.color_lens_rounded),
+            title: Text(laTiengViet ? 'Màu chủ đạo' : 'Primary Color'),
+            trailing: CircleAvatar(
+              backgroundColor: quanLy.mauChuDao,
+              radius: 15,
             ),
-          ),
-          SizedBox(
-            height: 60,
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                _XayDungOChonMau(Colors.blue, quanLy),
-                _XayDungOChonMau(Colors.red, quanLy),
-                _XayDungOChonMau(Colors.green, quanLy),
-                _XayDungOChonMau(Colors.orange, quanLy),
-                _XayDungOChonMau(Colors.purple, quanLy),
-                _XayDungOChonMau(Colors.pink, quanLy),
-                _XayDungOChonMau(Colors.teal, quanLy),
-              ],
-            ),
+            onTap: () {
+              // Hiển thị hộp thoại chọn màu
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(laTiengViet ? 'Chọn màu' : 'Select Color'),
+                  content: Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      Colors.blue,
+                      Colors.red,
+                      Colors.green,
+                      Colors.orange,
+                      Colors.purple,
+                      Colors.pink,
+                      Colors.teal,
+                    ].map((mau) {
+                      return GestureDetector(
+                        onTap: () {
+                          quanLy.doiMauChuDao(mau);
+                          Navigator.pop(context);
+                        },
+                        child: CircleAvatar(
+                          backgroundColor: mau,
+                          radius: 20,
+                          child: quanLy.mauChuDao == mau
+                              ? const Icon(Icons.check, color: Colors.white)
+                              : null,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              );
+            },
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _XayDungOChonMau(Color mau, QuanLyGhiChu quanLy) {
-    final laMauDangChon = quanLy.mauChuDao == mau;
-    return GestureDetector(
-      onTap: () => quanLy.doiMauChuDao(mau),
-      child: Container(
-        width: 50,
-        height: 50,
-        margin: const EdgeInsets.only(right: 12),
-        decoration: BoxDecoration(
-          color: mau,
-          shape: BoxShape.circle,
-          border: laMauDangChon 
-            ? Border.all(color: Colors.black, width: 3) 
-            : null,
-        ),
-        child: laMauDangChon 
-          ? const Icon(Icons.check, color: Colors.white) 
-          : null,
       ),
     );
   }
