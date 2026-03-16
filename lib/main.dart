@@ -7,13 +7,13 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (context) => QuanLyGhiChu(),
-      child: const UngDungGhiChu(),
+      child: const TakeNoteApp(),
     ),
   );
 }
 
-class UngDungGhiChu extends StatelessWidget {
-  const UngDungGhiChu({super.key});
+class TakeNoteApp extends StatelessWidget {
+  const TakeNoteApp({super.key});
 
   @override
   Widget build(BuildContext context) {
