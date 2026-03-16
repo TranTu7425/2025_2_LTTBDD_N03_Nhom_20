@@ -38,6 +38,32 @@ class _ManHinhDanhSachState extends State<ManHinhDanhSach> {
     });
   }
 
+  Widget _XayDungItemGhiChu(GhiChu ghiChu, {bool hienNhanGhim = false}) {
+    final duocChon = _danhSachDuocChon.contains(ghiChu.id);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: _XayDungTheGhiChu(
+        ghiChu,
+        duocChon: duocChon,
+        dangTrongCheDoChon: _dangTrongCheDoChon,
+        hienNhanGhim: hienNhanGhim,
+        onTap: () {
+          if (_dangTrongCheDoChon) {
+            _batTatChonGhiChu(ghiChu.id);
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ManHinhSoanThao(ghiChu: ghiChu),
+              ),
+            );
+          }
+        },
+        onLongPress: () => _batTatChonGhiChu(ghiChu.id),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final quanLy = Provider.of<QuanLyGhiChu>(context);
@@ -101,69 +127,108 @@ class _ManHinhDanhSachState extends State<ManHinhDanhSach> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: SearchBar(
-              elevation: WidgetStateProperty.all(0),
-              backgroundColor: WidgetStateProperty.all(
-                Theme.of(
-                  context,
-                ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
-              ),
-              hintText: laTiengViet ? 'Tìm kiếm ghi chú...' : 'Search notes...',
-              padding: const WidgetStatePropertyAll<EdgeInsets>(
-                EdgeInsets.symmetric(horizontal: 16.0),
-              ),
-              onChanged: (giaTri) {
-                setState(() {
-                  _tuKhoaTimKiem = giaTri;
-                });
-              },
-              leading: Icon(Icons.search_rounded, color: quanLy.mauChuDao),
-            ),
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 4.0,
-            ),
             child: Row(
               children: [
-                FilterChip(
-                  label: Text(laTiengViet ? 'Tất cả' : 'All'),
-                  selected: quanLy.nhanDangLoc == null,
-                  onSelected: (selected) {
-                    quanLy.locTheoNhan(null);
-                  },
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                Expanded(
+                  child: SearchBar(
+                    elevation: WidgetStateProperty.all(0),
+                    backgroundColor: WidgetStateProperty.all(
+                      Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    ),
+                    hintText: laTiengViet ? 'Tìm kiếm ghi chú...' : 'Search notes...',
+                    padding: const WidgetStatePropertyAll<EdgeInsets>(
+                      EdgeInsets.symmetric(horizontal: 16.0),
+                    ),
+                    onChanged: (giaTri) {
+                      setState(() {
+                        _tuKhoaTimKiem = giaTri;
+                      });
+                    },
+                    leading: Icon(Icons.search_rounded, color: quanLy.mauChuDao),
                   ),
                 ),
-                const SizedBox(width: 8),
-                ...danhSachNhan.entries.map((entry) {
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: FilterChip(
-                      label: Text(entry.key),
-                      selected: quanLy.nhanDangLoc == entry.key,
-                      onSelected: (selected) {
-                        quanLy.locTheoNhan(selected ? entry.key : null);
-                      },
-                      selectedColor: entry.value.withOpacity(0.2),
-                      checkmarkColor: entry.value,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      labelStyle: TextStyle(
-                        color: quanLy.nhanDangLoc == entry.key
-                            ? entry.value
-                            : null,
-                        fontWeight: quanLy.nhanDangLoc == entry.key
-                            ? FontWeight.bold
-                            : null,
-                      ),
+                const SizedBox(width: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      quanLy.nhanDangLoc == null 
+                          ? Icons.filter_list_rounded 
+                          : Icons.filter_list_off_rounded,
+                      color: quanLy.nhanDangLoc == null 
+                          ? Colors.grey 
+                          : quanLy.mauChuDao,
                     ),
-                  );
-                }).toList(),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => Container(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                laTiengViet ? 'Lọc theo nhãn' : 'Filter by tag',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              Wrap(
+                                spacing: 10,
+                                runSpacing: 10,
+                                children: [
+                                  FilterChip(
+                                    label: Text(laTiengViet ? 'Tất cả' : 'All'),
+                                    selected: quanLy.nhanDangLoc == null,
+                                    onSelected: (selected) {
+                                      quanLy.locTheoNhan(null);
+                                      Navigator.pop(context);
+                                    },
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  ...danhSachNhan.entries.map((entry) {
+                                    return FilterChip(
+                                      label: Text(entry.key),
+                                      selected: quanLy.nhanDangLoc == entry.key,
+                                      onSelected: (selected) {
+                                        quanLy.locTheoNhan(selected ? entry.key : null);
+                                        Navigator.pop(context);
+                                      },
+                                      selectedColor: entry.value.withOpacity(0.2),
+                                      checkmarkColor: entry.value,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      labelStyle: TextStyle(
+                                        color: quanLy.nhanDangLoc == entry.key
+                                            ? entry.value
+                                            : null,
+                                        fontWeight: quanLy.nhanDangLoc == entry.key
+                                            ? FontWeight.bold
+                                            : null,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ],
             ),
           ),
@@ -190,34 +255,43 @@ class _ManHinhDanhSachState extends State<ManHinhDanhSach> {
                       ],
                     ),
                   )
-                : ListView.builder(
+                : ListView(
                     padding: const EdgeInsets.all(16),
-                    itemCount: danhSachHienThi.length,
-                    itemBuilder: (context, chiSo) {
-                      final ghiChu = danhSachHienThi[chiSo];
-                      final duocChon = _danhSachDuocChon.contains(ghiChu.id);
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _XayDungTheGhiChu(
-                          ghiChu,
-                          duocChon: duocChon,
-                          dangTrongCheDoChon: _dangTrongCheDoChon,
-                          onTap: () {
-                            if (_dangTrongCheDoChon) {
-                              _batTatChonGhiChu(ghiChu.id);
-                            } else {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ManHinhSoanThao(ghiChu: ghiChu),
-                                ),
-                              );
-                            }
-                          },
-                          onLongPress: () => _batTatChonGhiChu(ghiChu.id),
+                    children: [
+                      if (danhSachHienThi.any((gc) => gc.daGhim)) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8, bottom: 12),
+                          child: Text(
+                            laTiengViet ? 'ĐÃ GHIM' : 'PINNED',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.primary,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
                         ),
-                      );
-                    },
+                        ...danhSachHienThi
+                            .where((gc) => gc.daGhim)
+                            .map((ghiChu) => _XayDungItemGhiChu(ghiChu, hienNhanGhim: true)),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8, bottom: 12),
+                          child: Text(
+                            laTiengViet ? 'KHÁC' : 'OTHERS',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ),
+                      ],
+                      ...danhSachHienThi
+                          .where((gc) => !gc.daGhim)
+                          .map((ghiChu) => _XayDungItemGhiChu(ghiChu)),
+                    ],
                   ),
           ),
         ],
@@ -277,6 +351,7 @@ class _XayDungTheGhiChu extends StatelessWidget {
   final bool dangTrongCheDoChon;
   final VoidCallback onTap;
   final VoidCallback onLongPress;
+  final bool hienNhanGhim;
 
   const _XayDungTheGhiChu(
     this.ghiChu, {
@@ -284,6 +359,7 @@ class _XayDungTheGhiChu extends StatelessWidget {
     required this.dangTrongCheDoChon,
     required this.onTap,
     required this.onLongPress,
+    this.hienNhanGhim = false,
   });
 
   @override
@@ -416,6 +492,29 @@ class _XayDungTheGhiChu extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if (hienNhanGhim && ghiChu.daGhim)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.push_pin_rounded,
+                                    size: 12,
+                                    color: quanLy.mauChuDao,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    quanLy.laTiengViet ? 'ĐÃ GHIM' : 'PINNED',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: quanLy.mauChuDao,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           Row(
                             children: [
                               Expanded(
